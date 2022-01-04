@@ -1,9 +1,14 @@
 import { User } from './models/User';
+import { UserEdit } from './views/UserEdit';
+import { UserForm } from './views/UserForm';
 
-const collection = User.buildUserCollection();
+const user = User.buildUser({ name: 'Karina', age: 22 });
 
-collection.on('change', () => {
-  console.log(collection);
-});
+const root = document.getElementById('root');
 
-collection.fetch();
+if (!root) throw new Error('Parent not found');
+
+const userEdit = new UserEdit(root, user);
+
+userEdit.render();
+console.log(userEdit);
