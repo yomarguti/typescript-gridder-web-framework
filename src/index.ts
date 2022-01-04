@@ -1,16 +1,9 @@
 import { User } from './models/User';
 
-const user = new User({ name: 'Yomar', age: 37 });
-console.log(user);
+const collection = User.buildUserCollection();
 
-user.set({ name: 'Carlos', age: 35 });
-
-user.on('change', () => {
-  console.log('Create User');
+collection.on('change', () => {
+  console.log(collection);
 });
 
-user.on('change', () => {
-  console.log('Save User');
-});
-
-user.trigger('change');
+collection.fetch();

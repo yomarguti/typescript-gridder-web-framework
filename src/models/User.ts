@@ -1,36 +1,30 @@
-interface UserProps {
+import { AxiosResponse } from 'axios';
+import { Attributes } from './Attributes';
+import { Callback, Eventing } from './Eventing';
+import { Model } from './Model';
+import { ApiSync } from './ApiSync';
+import { Collection } from './Collection';
+
+export interface UserProps {
+  id?: number;
   name?: string;
   age?: number;
 }
 
-type Callback = () => void;
+const rootUrl = 'http://localhost:3000/users';
 
-type Events = {
-  [key: string]: Callback[];
-};
-
-export class User {
-  events: Events = {};
-  constructor(private data: UserProps) {}
-
-  get(propName: string): string | number {
-    return this.data[propName];
+export class User extends Model<UserProps> {
+  static buildUser(attrs: UserProps): User {
+    return new User(
+      new Attributes<UserProps>(attrs),
+      new Eventing(),
+      new ApiSync<UserProps>(rootUrl)
+    );
   }
 
-  set(update: UserProps): void {
-    Object.assign(this.data, update);
-  }
-
-  on(eventName: string, callback: Callback): void {
-    const handlers = this.events[eventName] || [];
-    handlers.push(callback);
-    this.events[eventName] = handlers;
-  }
-
-  trigger(eventName: string): void {
-    const handlers = this.events[eventName];
-    if (!handlers || handlers.length === 0) return;
-
-    handlers.forEach((callback) => callback());
+  static buildUserCollection(): Collection<User, UserProps> {
+    return new Collection<User, UserProps>('http://localhost:3000/users', (json: UserProps) => {
+      return User.buildUser(json);
+    });
   }
 }
